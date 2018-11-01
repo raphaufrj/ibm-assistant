@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%date %level [%thread] %logger{10} [%file : %line] %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="rolling-file"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>%date %level [%thread] %logger{10} [%file : %line] %msg%n</pattern>
+        </encoder>
+        <file>/u01/logs/java-assistant-sample.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/u01/logs/java-assistant-sample.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <springProfile name="local">
+	    <logger name="com.ibm.watson" level="DEBUG"/>
+	    <root level="INFO">
+            <appender-ref ref="stdout"/>
+            <appender-ref ref="rolling-file"/>
+        </root>
+    </springProfile>
+    <springProfile name="dev,staging,uat,hml">
+	    <logger name="com.ibm.watson" level="DEBUG"/>
+        <root level="INFO">
+            <appender-ref ref="rolling-file"/>
+        </root>
+    </springProfile>
+    <springProfile name="prd">
+	    <logger name="com.ibm.watson" level="INFO"/>
+        <root level="WARN">
+            <appender-ref ref="rolling-file"/>
+        </root>
+    </springProfile>
+</configuration>
